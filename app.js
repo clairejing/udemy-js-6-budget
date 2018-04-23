@@ -11,6 +11,14 @@
       this.value = value
     }
 
+    var calculateTotal = function(type) {
+      var sum = 0
+      data.allItems[type].forEach(function (current, index, array) {
+        sum += current.value
+      })
+      data.totals[type] = sum
+    }
+
     var data = {
       allItems: {
         exp: [],
@@ -19,7 +27,9 @@
       totals: {
         exp: 0,
         inc: 0
-      }
+      },
+      budget: 0,
+      percentage: -1
     }
 
     return {
@@ -38,6 +48,24 @@
         data.allItems[type].push(newItem)
 
         return newItem
+      },
+      calculateBudget: function () {
+        calculateTotal('exp')
+        calculateTotal('inc')
+        data.budget = data.totals.inc -data.totals.exp
+        if (data.totals.inc > 0) {
+          data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100)
+        } else {
+          data.percentage = -1
+        }
+      },
+      getBudget: function () {
+        return {
+          budget: data.budget,
+          totalInc: data.totals.inc,
+          totalExp: data.totals.exp,
+          percentage: data.totals.percentage
+        }
       }
     }
 
@@ -51,14 +79,18 @@
         inputValue: '.add__value',
         inputBtn: '.add__btn',
         incomeContainer: '.income__list',
-        expensesContainer: '.expenses__list'
+        expensesContainer: '.expenses__list',
+        budgetLabel: '.budget__value',
+        incomeLabel: '.budget__income--value',
+        expensesLabel: 'budget__expenses--value',
+        percentageLabel: '.budget__expenses--percentage'
     }
     return {
       getinput: function () {
         return {
           type: document.querySelector(DOMStrings.inputType).value,
           description: document.querySelector(DOMStrings.inputDescription).value,
-          value: document.querySelector(DOMStrings.inputValue).value
+          value: parseFloat(document.querySelector(DOMStrings.inputValue).value)
         }
       },
 
@@ -90,6 +122,18 @@
           current.value = ""
         })
       },
+      displayBudget: function (obj) {
+        document.querySelector(DOMStrings.budgetLabel).textContent = obj.budget
+        document.querySelector(DOMStrings.incometLabel).textContent = obj.totalInc
+        document.querySelector(DOMStrings.expensesLabel).textContent = obj.totalExp
+        document.querySelector(DOMStrings.percentageLabel).textContent = obj.percentage
+        if (obj.percentage > 0) {
+          document.querySelector(DOMStrings.percentageLabel).textContent = obj.percentage + '%'
+
+        } else {
+          document.querySelector(DOMStrings.percentageLabel).textContent = '-'
+        }
+      },
 
       getDOMStrings: function () {
         return DOMStrings
@@ -113,17 +157,33 @@
       })
     }
 
+    var updateBudget = function () {
+      budgetCtrl.calculateBudget()
+      var budget = budgetCtrl.getBudget()
+      UICtrl.displayBudget(budget)
+    }
+
     var ctrlAddItem = function () {
       var input, newItem
       input = UICtrl.getinput()
-      newItem = budgetController(input.type, input.description, input.value) 
-      UICtrl.addListItem(newItem, input.type)
+
+      if (input.description !== "" && isNaN(input.value) && input.value > 0) {
+        newItem = budgetController(input.type, input.description, input.value) 
+        UICtrl.addListItem(newItem, input.type)
+        updateBudget()
+      }
     }
 
     return {
       init: function () {
         console.log('Application has started')
         setupEventListeners()
+        displayBudget({
+          budget: 0,
+          totalInc: 0,
+          totalExp: 0,
+          percentage: '-'
+        })
       }
     }
 
