@@ -11,15 +11,15 @@
         inputBtn: '.add__btn'
     }
     return {
-        getinput: function () {
-            return {
-                type: document.querySelector(DOMStrings.inputType).value,
-                description: document.querySelector(DOMStrings.inputDescription).value,
-                value: document.querySelector(DOMStrings.inputValue).value
-            }
-        },
+      getinput: function () {
+        return {
+          type: document.querySelector(DOMStrings.inputType).value,
+          description: document.querySelector(DOMStrings.inputDescription).value,
+          value: document.querySelector(DOMStrings.inputValue).value
+        }
+      },
         getDOMStrings: function () {
-            return DOMStrings
+          return DOMStrings
         }
     }
 
@@ -28,19 +28,32 @@
 
  var controller = (function (budgetCtrl, UICtrl) {
 
-    var DOMStrings = UICtrl.getDOMStrings()
+    var setupEventListeners = function () {
+      var DOMStrings = UICtrl.getDOMStrings()
 
-    var ctrlAddItem = function () {
-        var input = UICtrl.getinput()
-        console.log(input)
+      document.querySelector(DOMStrings.inputBtn).addEventListener('click', ctrlAddItem)
+
+      document.addEventListener('keypress', function () {
+        if (event.keyCode === 13 || event.which === 13) {
+          ctrlAddItem()
+        }
+      })
     }
 
-    document.querySelector(DOMStrings.inputBtn).addEventListener('click', ctrlAddItem)
+    var ctrlAddItem = function () {
+      var input = UICtrl.getinput()
+      console.log(input)
+    }
 
-    document.addEventListener('keypress', function () {
-        if (event.keyCode === 13 || event.which === 13) {
-            ctrlAddItem()
-        }
-    })
+    return {
+      init: function () {
+        console.log('Application has started')
+        setupEventListeners()
+      }
+    }
 
  }) (budgetController, UIController)
+
+
+
+ controller.init()
