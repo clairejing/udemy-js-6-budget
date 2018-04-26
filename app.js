@@ -118,7 +118,8 @@
         expensesLabel: 'budget__expenses--value',
         percentageLabel: '.budget__expenses--percentage',
         container: '.container',
-        expensePercentagesLabel: 'item__percentage'
+        expensePercentagesLabel: 'item__percentage',
+        dateLabel: 'dateLabel'
     }
     return {
       getinput: function () {
@@ -191,6 +192,30 @@
         })
       },
 
+      displayMonth: function () {
+        var now = new Date()
+        var year =  now.getFullYear()
+        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        var month = now.getMonth()
+        document.querySelector(DOMStrings.dateLabel).textContent = months[month] + ' ' + year
+
+      },
+
+      formatNumber: function(num, type) {
+        var numSplit, num, dec
+        num = Math.abs(num)
+        num = num.toFixed(2)
+        numSplit = num.split('.')
+        int = numSplit[0]
+        if (int.length > 3) {
+          int = int.substr(0, int.length - 3) + ',' + int.substr(int.length - 3, int.length)
+        }
+        dec = numSplit[1]
+
+        type === 'exp' ? sign = '-' : sign = '+'
+        return sign + ' ' + int + dec
+      },
+
       getDOMStrings: function () {
         return DOMStrings
       }
@@ -257,6 +282,7 @@
       init: function () {
         console.log('Application has started')
         setupEventListeners()
+        UICtrl.displayMonth()
         displayBudget({
           budget: 0,
           totalInc: 0,
