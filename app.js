@@ -198,7 +198,14 @@
         var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         var month = now.getMonth()
         document.querySelector(DOMStrings.dateLabel).textContent = months[month] + ' ' + year
+      },
 
+      changedType: function () {
+        var fields = document.querySelectorAll(DOMStrings.inputType + ',' + DOMStrings.inputDescription + ',' + DOMStrings.inputValue)
+
+        nodeListForEach(fields, function(cur) {
+          cur.classList.toggle('red-focus')
+        })
       },
 
       formatNumber: function(num, type) {
